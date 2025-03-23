@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoniqueX - Discover Music</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(135deg, #6A0DAD, #FF5733);
+        }
+        .trending-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto 20px;
+            text-align: left;
+        }
+        .trending-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        .music-item {
+            display: flex;
+            align-items: center;
+            background: #222;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .music-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+        .music-info h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .music-info p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="logo.png" alt="Logo" class="logo">
+        <h1>Discover Music</h1>
+        <p>Explore and enjoy the best music curated just for you.</p>
+        <a href="load.html" class="btn"><b>Listen Now..</b></a>
+    </div>
+
+    <div class="trending-container">
+        <h2 class="trending-title">Trending Now</h2>
+        <div id="trendingMusic"></div>
+    </div>
+
+    <script>
+        async function loadTrendingMusic() {
+            try {
+                const response = await fetch("trend.json");
+                const trendingSongs = await response.json();
+                displayTrendingMusic(trendingSongs.slice(0, 10)); // Show only 10 trending songs
+            } catch (error) {
+                console.error("Error loading trending music:", error);
+            }
+        }
+
+        function displayTrendingMusic(trendingSongs) {
+            const list = document.getElementById("trendingMusic");
+            list.innerHTML = "";
+            trendingSongs.forEach(song => {
+                const item = document.createElement("div");
+                item.className = "music-item";
+                item.innerHTML = `
+                    <img src="${song.image}" alt="${song.title}" onclick="openSong('${song.id}')">
+                    <div class="music-info" onclick="openSong('${song.id}')">
+                        <h3>${song.title}</h3>
+                        <p>${song.singer}</p>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function openSong(id) {
+            window.location.href = `gig.html?id=${id}`;
+        }
+
+        loadTrendingMusic();
+    </script>
+
+</body>
+</html>

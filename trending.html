@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoniqueX - Trending Music</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #121212; 
+            color: white; 
+            margin: 0; 
+            padding: 0; 
+            text-align: center; 
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #6A0DAD; 
+            padding: 15px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .menu {
+            position: relative;
+        }
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            background: #fff;
+            color: #6A0DAD;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        .aesthetic-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .aesthetic-menu h2 {
+            color: #6A0DAD;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .aesthetic-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .aesthetic-menu ul li {
+            margin: 15px 0;
+        }
+        .aesthetic-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .aesthetic-menu ul li a:hover {
+            color: #6A0DAD;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: #6A0DAD;
+        }
+        #searchBar {
+            width: 80%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #6A0DAD, #FF5733, #FFCC00);
+            color: white;
+            text-align: left;
+        }
+        .music-list {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: left;
+        }
+        .music-item {
+            display: flex;
+            align-items: center;
+            background: #222;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .music-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+        .music-info h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .music-info p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #bbb;
+        }
+        .footer {
+            background: #6A0DAD;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo" class="logo">
+            <h2>SoniqueX</h2>
+        </div>
+        <div class="menu">
+            <div class="menu-icon" onclick="openAestheticMenu()">☰</div>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <input type="text" id="searchBar" placeholder="Search for music..." oninput="searchMusic()">
+
+    <h2>Trending Music</h2>
+    <div class="music-list" id="trendingMusic"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <h3>All Music</h3>
+    </div>
+
+    <!-- Aesthetic Menu -->
+    <div class="aesthetic-menu" id="aestheticMenu">
+        <div class="close-btn" onclick="closeAestheticMenu()">✖</div>
+        <h2>WEB</h2>
+        <ul>
+            <li><a href="index.html">Landing</a></li>
+            <li><a href="home.html">Back To Home</a></li>
+            <li><a href="trending.html">Trending Music</a></li>
+            <li><a href="trending.html">Recommendations</a></li>
+            <li><a href="new release.html">New Release</a></li>
+            <li><a href="fonk.html">Fonk</a></li>
+        </ul>
+        <h2>OTHER</h2>
+        <ul>
+            <li><a href="features.html">Our Features</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function openAestheticMenu() {
+            document.getElementById("aestheticMenu").style.display = "block";
+        }
+
+        function closeAestheticMenu() {
+            document.getElementById("aestheticMenu").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const menu = document.getElementById("aestheticMenu");
+            if (event.target === menu) {
+                menu.style.display = "none";
+            }
+        };
+
+        async function loadTrendingMusic() {
+            try {
+                const response = await fetch("trend.json");
+                const trendingSongs = await response.json();
+                displayTrendingMusic(trendingSongs);
+            } catch (error) {
+                console.error("Error loading trending music:", error);
+            }
+        }
+
+        function displayTrendingMusic(trendingSongs) {
+            const list = document.getElementById("trendingMusic");
+            list.innerHTML = "";
+            trendingSongs.forEach(song => {
+                const item = document.createElement("div");
+                item.className = "music-item";
+                item.innerHTML = `
+                    <img src="${song.image}" alt="${song.title}" onclick="openSong('${song.id}')">
+                    <div class="music-info" onclick="openSong('${song.id}')">
+                        <h3>${song.title}</h3>
+                        <p>${song.singer}</p>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function searchMusic() {
+            const searchInput = document.getElementById("searchBar").value.toLowerCase();
+            document.querySelectorAll(".music-item").forEach(item => {
+                const title = item.querySelector("h3").innerText.toLowerCase();
+                item.style.display = title.includes(searchInput) ? "flex" : "none";
+            });
+        }
+
+        function openSong(id) {
+            window.location.href = `gig.html?id=${id}`;
+        }
+
+        loadTrendingMusic();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Details</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #181818;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+        img {
+            width: 100%;
+            border-radius: 15px;
+        }
+        h2 {
+            margin-top: 10px;
+            font-size: 24px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #6A0DAD;
+        }
+
+        .music-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn {
+            width: 50px;
+            height: 50px;
+            background: #6A0DAD;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0px 4px 10px rgba(106, 13, 173, 0.3);
+        }
+        .btn:hover {
+            background: #5a0c94;
+            transform: scale(1.1);
+            box-shadow: 0px 6px 15px rgba(106, 13, 173, 0.5);
+        }
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .progress-bar {
+            flex: 1;
+            appearance: none;
+            height: 5px;
+            background: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            outline: none;
+        }
+        .progress-bar::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #6A0DAD;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .time {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #6A0DAD;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .back-btn:hover {
+            background: #5a0c94;
+        }
+
+        /* Listen More Section */
+        .listen-more {
+            margin-top: 30px;
+            padding: 20px;
+            background: #181818;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+        .listen-more h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .listen-more-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .listen-more-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            cursor: pointer;
+            padding: 10px;
+            background: #222;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .listen-more-card:hover {
+            background: #333;
+        }
+        .listen-more-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+        }
+        .listen-more-card h3 {
+            font-size: 16px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a class="back-btn" href="home.html">⬅ Back to Home</a>
+        <img id="songImage" src="" alt="Song Cover">
+        <h2 id="songTitle"></h2>
+        <h3 id="singerName"></h3>
+
+        <div class="music-controls">
+            <div class="control-buttons">
+                <button class="btn" onclick="previousSong()">⏮</button>
+                <button class="btn" onclick="togglePlayPause()">▶</button>
+                <button class="btn" onclick="nextSong()">⏭</button>
+            </div>
+
+            <div class="progress-container">
+                <span class="time" id="currentTime">0:00</span>
+                <input type="range" id="progressBar" class="progress-bar" min="0" value="0" step="1">
+                <span class="time" id="duration">0:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="listen-more">
+        <h2>Listen More</h2>
+        <div class="listen-more-list" id="listenMoreList"></div>
+    </div>
+
+    <script>
+        let audio = new Audio();
+        let playBtn = document.querySelector(".btn:nth-child(2)");
+        let progressBar = document.getElementById("progressBar");
+        let currentTimeEl = document.getElementById("currentTime");
+        let durationEl = document.getElementById("duration");
+        let songs = [];
+        let currentIndex = 0;
+
+        async function loadSong(index) {
+            const response = await fetch("music.json");
+            songs = await response.json();
+
+            if (index < 0) index = 0;
+            if (index >= songs.length) index = songs.length - 1;
+            currentIndex = index;
+
+            let song = songs[index];
+            document.getElementById("songTitle").innerText = song.title;
+            document.getElementById("songImage").src = song.image;
+            document.getElementById("singerName").innerText = "Singer: " + song.singer;
+            audio.src = song.music;
+
+            audio.addEventListener("loadedmetadata", () => {
+                durationEl.innerText = formatTime(audio.duration);
+            });
+
+            loadListenMore();
+        }
+
+        function togglePlayPause() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerText = "<>";
+            } else {
+                audio.pause();
+                playBtn.innerText = "▶";
+            }
+        }
+
+        function nextSong() {
+            if (currentIndex < songs.length - 1) {
+                loadSong(currentIndex + 1);
+                audio.play();
+            }
+        }
+
+        function previousSong() {
+            if (currentIndex > 0) {
+                loadSong(currentIndex - 1);
+                audio.play();
+            }
+        }
+
+        function updateProgress() {
+            progressBar.value = audio.currentTime;
+            currentTimeEl.innerText = formatTime(audio.currentTime);
+        }
+
+        function setProgress() {
+            audio.currentTime = progressBar.value;
+        }
+
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.floor(time % 60);
+            return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        }
+
+        function loadListenMore() {
+            let list = document.getElementById("listenMoreList");
+            list.innerHTML = "";
+            songs.forEach((song, index) => {
+                if (index !== currentIndex) {
+                    list.innerHTML += `<div class="listen-more-card" onclick="loadSong(${index})">
+                        <img src="${song.image}" alt="${song.title}">
+                        <h3>${song.title}</h3>
+                    </div>`;
+                }
+            });
+        }
+
+        audio.addEventListener("timeupdate", updateProgress);
+        progressBar.addEventListener("input", setProgress);
+
+        loadSong(0);
+    </script>
+
+</body>
+</html>

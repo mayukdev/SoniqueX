@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - SoniqueX</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #121212; 
+            color: white; 
+            margin: 0; 
+            padding: 0; 
+            text-align: center; 
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #6A0DAD; 
+            padding: 15px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .menu {
+            position: relative;
+        }
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            background: #fff;
+            color: #6A0DAD;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        .aesthetic-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .aesthetic-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .aesthetic-menu ul li {
+            margin: 15px 0;
+        }
+        .aesthetic-menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .aesthetic-menu ul li a:hover {
+            color: #6A0DAD;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: #6A0DAD;
+        }
+        .contact-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .contact-container h2 {
+            margin-bottom: 20px;
+            color: #6A0DAD;
+        }
+        .contact-container input, .contact-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .contact-container textarea {
+            height: 120px;
+            resize: none;
+        }
+        .contact-container button {
+            background: #6A0DAD;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .contact-container button:hover {
+            background: #5c0ca0;
+        }
+        .footer {
+            background: #6A0DAD;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo" class="logo">
+            <h2>SoniqueX</h2>
+        </div>
+        <div class="menu">
+            <div class="menu-icon" onclick="openAestheticMenu()">☰</div>
+        </div>
+    </header>
+
+    <!-- Contact Form -->
+    <div class="contact-container">
+        <h2>Contact Us</h2>
+        <form id="contact-form">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <textarea id="message" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <h3>Contact Support</h3>
+    </div>
+
+    <!-- Aesthetic Menu -->
+    <div class="aesthetic-menu" id="aestheticMenu">
+        <div class="close-btn" onclick="closeAestheticMenu()">✖</div>
+        <h2>WEB</h2>
+        <ul>
+            <li><a href="index.html">Landing</a></li>
+            <li><a href="trending.html">Trending Music</a></li>
+            <li><a href="recommendation.html">Recommendations</a></li>
+            <li><a href="new_release.html">New Release</a></li>
+            <li><a href="fonk.html">Fonk</a></li>
+        </ul>
+        <h2>OTHER</h2>
+        <ul>
+            <li><a href="features.html">Our Features</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function openAestheticMenu() {
+            document.getElementById("aestheticMenu").style.display = "block";
+        }
+
+        function closeAestheticMenu() {
+            document.getElementById("aestheticMenu").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const menu = document.getElementById("aestheticMenu");
+            if (event.target === menu) {
+                menu.style.display = "none";
+            }
+        };
+
+        // Initialize EmailJS
+        emailjs.init("BgiAkuM4cXvl_Zfl-");
+
+        document.getElementById("contact-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const templateParams = {
+                from_name: document.getElementById("name").value,
+                from_email: document.getElementById("email").value,
+                message: document.getElementById("message").value
+            };
+
+            emailjs.send("service_tg3xc7o", "template_idurowq", templateParams)
+                .then(response => {
+                    alert("Message sent successfully!");
+                    document.getElementById("contact-form").reset();
+                }, error => {
+                    alert("Failed to send message. Please try again.");
+                    console.error("EmailJS Error:", error);
+                });
+        });
+    </script>
+
+</body>
+</html>
